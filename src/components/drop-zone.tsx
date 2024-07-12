@@ -52,7 +52,11 @@ export default function DropZone({
         {isDragActive ? (
           <p>Drop the files here ...</p>
         ) : (
-          <p>Drag 'n' drop a txt file here, or click to select a txt file</p>
+          <p className="whitespace-pre-wrap text-center">
+            {
+              "Drag 'n' drop a txt file here \n or \n Click to select a txt file"
+            }
+          </p>
         )}
       </div>
     </>
