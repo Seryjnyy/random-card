@@ -20,6 +20,7 @@ import {
 } from "@radix-ui/react-icons";
 import { useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
+import { ThemeModeToggle } from "@/components/theme-mode-toggle";
 
 const PREV_SHORTCUTS = ["a"];
 const NEXT_SHORTCUTS = ["d"];
@@ -86,28 +87,42 @@ const ShowingStuff = ({
       </div>
 
       <div className="flex flex-col justify-center items-center fixed bottom-8 ">
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger>
-              <Button
-                variant={"ghost"}
-                size={"icon"}
-                className="absolute -right-10 bottom-12 backdrop-blur-sm"
-                onClick={() => onReset()}
-              >
-                <ReloadIcon />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p className="space-x-2">
-                <span>Restart</span>
-                <Shortcut shortcut="ctrl+alt+n" />
-              </p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <div className="absolute -right-10 bottom-12  space-x-8">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <Button
+                  variant={"ghost"}
+                  size={"icon"}
+                  className="backdrop-blur-sm"
+                  onClick={() => onReset()}
+                >
+                  <ReloadIcon />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="space-x-2">
+                  <span>Restart</span>
+                  <Shortcut shortcut="ctrl+alt+n" />
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
 
         <div className="flex items-center gap-2">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <ThemeModeToggle />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="space-x-2">
+                  <span>Change theme</span>
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
           <div className="space-x-2 border p-1 backdrop-blur-sm">
             <TooltipProvider>
               <Tooltip>
@@ -187,7 +202,7 @@ const ShowingStuff = ({
 };
 
 export default function Content() {
-  const [stuff, setStuff] = useState<Stuff[]>([]);
+  const [stuff, setStuff] = useState<Stuff[]>([{ id: "s", content: "s" }]);
 
   const resetStuff = () => setStuff([]);
   useHotkeys(RESTART_SHORTCUTS, resetStuff);
