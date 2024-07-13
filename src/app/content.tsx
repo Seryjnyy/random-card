@@ -1,4 +1,12 @@
 "use client";
+import { Key } from "ts-key-enum";
+
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import textSVG from "../../public/text.svg";
 import Image from "next/image";
 import DropZone from "@/components/drop-zone";
@@ -13,6 +21,11 @@ import {
 import { useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 
+const PREV_SHORTCUTS = ["a"];
+const NEXT_SHORTCUTS = ["d"];
+const RESHUFFLE_SHORTCUTS = ["r"];
+const RESTART_SHORTCUTS = ["ctrl+alt+n"];
+
 function shuffleArray(array: any[]) {
   const cpy = [...array];
   for (var i = cpy.length - 1; i > 0; i--) {
@@ -24,6 +37,15 @@ function shuffleArray(array: any[]) {
   return cpy;
 }
 
+const Shortcut = ({ shortcut }: { shortcut: string }) => {
+  return (
+    <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+      <span className="text-xs">⌘</span>
+      {shortcut}
+    </kbd>
+  );
+};
+
 const ShowingStuff = ({
   stuff,
   onReset,
@@ -33,9 +55,9 @@ const ShowingStuff = ({
 }) => {
   const [localStuff, setLocalStuff] = useState<Stuff[]>(stuff);
   const [index, setIndex] = useState(0);
-  useHotkeys("a", () => handlePrev());
-  useHotkeys("d", () => handleNext());
-  useHotkeys("r", () => handleReshuffle());
+  useHotkeys([...PREV_SHORTCUTS, Key.ArrowLeft], () => handlePrev());
+  useHotkeys([...NEXT_SHORTCUTS, Key.ArrowRight], () => handleNext());
+  useHotkeys(RESHUFFLE_SHORTCUTS, () => handleReshuffle());
 
   const handleNext = () => {
     if (index >= localStuff.length - 1) return;
@@ -57,38 +79,86 @@ const ShowingStuff = ({
 
   return (
     <>
-      <div className="flex items-center justify-center bg-blue-200 h-fit">
-        <p className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-clip p-2 pb-32 md:p-4 md:pb-32  rounded-lg font-bold whitespace-pre-wrap leading-tight">
+      <div className="flex items-center justify-center min-h-screen ">
+        <p className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl  p-2 pb-32 md:p-4 md:pb-32  rounded-lg font-bold whitespace-pre-wrap leading-tight  ">
           {localStuff[index] ? localStuff[index].content : ""}
         </p>
       </div>
 
       <div className="flex flex-col justify-center items-center fixed bottom-8 ">
-        {/* <div className="py-2"> */}
-        {/* <CountdownTimer amount={Date.now() + 120000} /> */}
-        {/* </div> */}
-        <Button
-          variant={"ghost"}
-          size={"icon"}
-          className="absolute -right-10 bottom-7 backdrop-blur-sm"
-          onClick={() => onReset()}
-        >
-          <ReloadIcon />
-        </Button>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger>
+              <Button
+                variant={"ghost"}
+                size={"icon"}
+                className="absolute -right-10 bottom-12 backdrop-blur-sm"
+                onClick={() => onReset()}
+              >
+                <ReloadIcon />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p className="space-x-2">
+                <span>Restart</span>
+                <Shortcut shortcut="ctrl+alt+n" />
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+
         <div className="flex items-center gap-2">
           <div className="space-x-2 border p-1 backdrop-blur-sm">
-            <Button onClick={handlePrev} disabled={index <= 0}>
-              <ArrowLeftIcon />
-            </Button>
-            <Button
-              onClick={handleNext}
-              disabled={index >= localStuff.length - 1}
-            >
-              <ArrowRightIcon />
-            </Button>
-            <Button onClick={handleReshuffle} className="select-none">
-              Reshuffle
-            </Button>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <Button onClick={handlePrev} disabled={index <= 0}>
+                    <ArrowLeftIcon />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="space-x-2">
+                    <span>Go back</span>
+                    <Shortcut shortcut="a, ←" />
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <Button
+                    onClick={handleNext}
+                    disabled={index >= localStuff.length - 1}
+                  >
+                    <ArrowRightIcon />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="space-x-2">
+                    <span>Go forward</span>
+                    <Shortcut shortcut="d, →" />
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <Button onClick={handleReshuffle} className="select-none">
+                    Reshuffle
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="space-x-2">
+                    <span>Change the order</span>
+                    <Shortcut shortcut="r" />
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
 
             {/* {questions[index] ? (
           <NotesModal
@@ -120,7 +190,7 @@ export default function Content() {
   const [stuff, setStuff] = useState<Stuff[]>([]);
 
   const resetStuff = () => setStuff([]);
-  useHotkeys("ctrl+alt+n", resetStuff);
+  useHotkeys(RESTART_SHORTCUTS, resetStuff);
 
   const onLoadStuff = (stuff: string) => {
     const res = parseStuff(stuff);
@@ -128,15 +198,15 @@ export default function Content() {
   };
 
   return (
-    <div className="flex flex-col justify-around md:justify-center items-center w-full h-screen gap-24 px-2 md:px-8 relative">
+    <div className="flex flex-col justify-around md:justify-center items-center w-full  gap-24 px-2 md:px-8 relative ">
       {stuff.length <= 0 && (
-        <div className="space-y-20">
-          <div className="flex flex-col justify-center  items-center gap-2">
+        <div className="space-y-20 h-screen  flex items-center flex-col justify-center relative">
+          <div className="flex flex-col  justify-center  items-center gap-2 ">
             <Image
               priority
               src={textSVG}
               alt="Content is split by new empty lines."
-              className="motion-safe:animate-[pulse_2s_ease-in-out_infinite] border w-28 h-28"
+              className="motion-safe:animate-[pulse_2s_ease-in-out_infinite] border w-28 h-28 rounded-lg "
             />
             <p className="text-muted-foreground w-[20rem] text-xs  text-balance text-center">
               Ensure your content is separated by a new empty line; otherwise,

@@ -46,7 +46,7 @@ export default function DropZone({
     <>
       <div
         {...getRootProps()}
-        className="border p-8 flex justify-center items-center w-full hover:ring ring-primary cursor-pointer rounded-lg"
+        className="border-[3px] border-dashed border- p-8 flex justify-center items-center w-[90vw] hover:ring ring-primary cursor-pointer rounded-lg"
       >
         <input {...getInputProps()} className="border" />
         {isDragActive ? (
