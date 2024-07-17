@@ -80,19 +80,29 @@ const ShowingStuff = ({
 
   return (
     <>
-      <div className="flex items-center justify-center min-h-screen ">
-        <p className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl  p-2 pb-32 md:p-4 md:pb-32  rounded-lg font-bold whitespace-pre-wrap leading-tight  ">
+      <div className="flex items-center justify-center min-h-screen w-full relative">
+        <p className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl  p-2 pb-32 md:p-4 md:pb-32 px-2 md:px-8  rounded-lg font-bold whitespace-pre-wrap leading-tight  ">
           {localStuff[index] ? localStuff[index].content : ""}
         </p>
+        <div className="h-full w-full  absolute flex ">
+          <div
+            className="h-full w-1/2 cursor-pointer"
+            onClick={handlePrev}
+          ></div>
+          <div
+            className="h-full w-1/2 cursor-pointer"
+            onClick={handleNext}
+          ></div>
+        </div>
       </div>
 
-      <div className="flex flex-col justify-center items-center fixed bottom-8 ">
+      <div className="flex flex-col justify-center items-center fixed bottom-8 z-50">
         <div className="absolute -right-10 bottom-12  space-x-8">
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger>
                 <Button
-                  variant={"ghost"}
+                  variant={"outline"}
                   size={"icon"}
                   className="backdrop-blur-sm"
                   onClick={() => onReset()}
@@ -213,9 +223,9 @@ export default function Content() {
   };
 
   return (
-    <div className="flex flex-col justify-around md:justify-center items-center w-full  gap-24 px-2 md:px-8 relative ">
+    <div className="flex flex-col justify-around md:justify-center items-center w-full  gap-24  relative ">
       {stuff.length <= 0 && (
-        <div className="space-y-20 h-screen  flex items-center flex-col justify-center relative">
+        <div className="space-y-20 h-screen  flex items-center flex-col justify-center relative px-2 md:px-8">
           <div className="flex flex-col  justify-center  items-center gap-2 ">
             <Image
               priority
